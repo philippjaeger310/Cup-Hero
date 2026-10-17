@@ -23,6 +23,8 @@ export const COUNTRIES: Country[] = [
   { code: 'RS', name: { en: 'Serbia', de: 'Serbien' }, flagEmoji: '🇷🇸' },
   { code: 'NO', name: { en: 'Norway', de: 'Norwegen' }, flagEmoji: '🇳🇴' },
   { code: 'CO', name: { en: 'Colombia', de: 'Kolumbien' }, flagEmoji: '🇨🇴' },
+  { code: 'EC', name: { en: 'Ecuador', de: 'Ecuador' }, flagEmoji: '🇪🇨' },
+  { code: 'CH', name: { en: 'Switzerland', de: 'Schweiz' }, flagEmoji: '🇨🇭' },
 ];
 
 export function getCountry(code: string): Country {

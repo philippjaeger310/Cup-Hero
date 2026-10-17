@@ -65,8 +65,14 @@ DOMESTIC_CUP_PRIORITY = ["FA Cup"]
 
 # The second-tier continental prize (added alongside continental-cup once a
 # real trophy image for it was supplied) — same idea as CONTINENTAL_PRIORITY
-# but for the "europa-league" slot. Only present for countries under UEFA.
-EUROPA_NAME = "UEFA Europa League"
+# but for the "europa-league" slot. Originally UEFA-only ("UEFA Europa
+# League"); generalized to a set once CONMEBOL's equivalent (Copa
+# Sudamericana, run alongside Copa Libertadores for AR/BR/CO/UY) got a real
+# trophy image too. Whichever of these names appears as a second
+# "continental"-type entry in a country's research JSON fills the slot —
+# see TrophyImage.tsx's europa-league branch for how the two get mapped to
+# their own distinct bundled images by this same real name.
+SECOND_TIER_CONTINENTAL_NAMES = {"UEFA Europa League", "CONMEBOL Copa Sudamericana"}
 
 # Shared confederation fallback (reused verbatim — it's the same real
 # trophy) for countries whose research pass didn't return a continental
@@ -219,7 +225,7 @@ for country in countries:
     if cont is not None:
         slots["continental-cup"] = {"name": cont["name"], "trophyImageUrl": cont.get("trophyImageUrl")}
 
-    europa = next((c for c in country["competitions"] if c["type"] == "continental" and c["name"] == EUROPA_NAME), None)
+    europa = next((c for c in country["competitions"] if c["type"] == "continental" and c["name"] in SECOND_TIER_CONTINENTAL_NAMES), None)
     if europa is not None:
         slots["europa-league"] = {"name": europa["name"], "trophyImageUrl": europa.get("trophyImageUrl")}
 

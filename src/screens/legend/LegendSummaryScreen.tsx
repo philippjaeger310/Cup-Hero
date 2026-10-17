@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { Screen } from '../../components/Screen';
@@ -7,6 +9,7 @@ import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { SeasonHistoryTable } from '../../components/SeasonHistoryTable';
 import { TrophyCase } from '../../components/TrophyCase';
+import { ShareCareerCard, SHARE_CARD_WIDTH, SHARE_CARD_HEIGHT } from '../../components/ShareCareerCard';
 import { colors, spacing, typography } from '../../theme';
 import { useCareer } from '../../engine/CareerContext';
 import { getClub } from '../../data/clubs';
@@ -26,6 +29,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'LegendSummary'>;
 export function LegendSummaryScreen({ navigation }: Props) {
   const { player, discardCareer } = useCareer();
   const { t, pick } = useLanguage();
+  const shareCardRef = useRef<View>(null);
+  const [sharing, setSharing] = useState(false);
 
   if (!player) {
     navigation.replace('GamesHub');
@@ -52,6 +57,26 @@ export function LegendSummaryScreen({ navigation }: Props) {
   const handleDone = async () => {
     await discardCareer();
     navigation.replace('GamesHub');
+  };
+
+  const handleShare = async () => {
+    if (!shareCardRef.current || sharing) return;
+    setSharing(true);
+    try {
+      const uri = await captureRef(shareCardRef, { format: 'png', quality: 1 });
+      const available = await Sharing.isAvailableAsync();
+      if (available) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'image/png',
+          dialogTitle: t('summary.shareDialogTitle'),
+        });
+      }
+    } catch {
+      // Best-effort — a cancelled or failed share should never block the
+      // retirement screen the player is looking at.
+    } finally {
+      setSharing(false);
+    }
   };
 
   return (
@@ -167,8 +192,24 @@ export function LegendSummaryScreen({ navigation }: Props) {
         );
       })}
 
+      <Button
+        label={sharing ? t('summary.sharing') : t('summary.share')}
+        variant="secondary"
+        onPress={handleShare}
+        disabled={sharing}
+        style={styles.actionButton}
+      />
       <Button label={t('summary.playAgain')} onPress={handlePlayAgain} style={styles.actionButton} />
       <Button label={t('summary.backToGames')} variant="secondary" onPress={handleDone} style={styles.actionButton} />
+
+      {/* Rendered off-screen (never shown to the player) purely so
+          captureRef() above has a real native view to rasterize into the
+          shared PNG — see ShareCareerCard.tsx. */}
+      <View style={styles.shareCardOffscreen} pointerEvents="none">
+        <View ref={shareCardRef} collapsable={false}>
+          <ShareCareerCard player={player} />
+        </View>
+      </View>
     </Screen>
   );
 }
@@ -297,5 +338,12 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginTop: spacing.sm,
+  },
+  shareCardOffscreen: {
+    position: 'absolute',
+    left: -10000,
+    top: 0,
+    width: SHARE_CARD_WIDTH,
+    height: SHARE_CARD_HEIGHT,
   },
 });

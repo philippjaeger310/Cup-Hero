@@ -1,0 +1,119 @@
+{
+  "country": "Switzerland",
+  "code": "CH",
+  "season": "2026/27",
+  "divisions": [
+    {
+      "tier": 1,
+      "leagueName": "Swiss Super League",
+      "clubs": [
+        {
+          "name": "FC Basel",
+          "reputationEstimate": 80,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/xppxwr1473791183.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Grasshopper Club Zürich",
+          "reputationEstimate": 58,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/o8vms91779213403.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "FC Lausanne-Sport",
+          "reputationEstimate": 54,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/za539g1580927491.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "FC Lugano",
+          "reputationEstimate": 64,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/2kh2if1567615581.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "FC Luzern",
+          "reputationEstimate": 58,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/rsupty1473587847.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Servette FC",
+          "reputationEstimate": 68,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/440wv71692206330.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "FC Sion",
+          "reputationEstimate": 56,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/gzpfmv1689085319.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "FC St. Gallen",
+          "reputationEstimate": 65,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/tyvyvs1422644512.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "FC Thun",
+          "reputationEstimate": 62,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/sovjgl1699462359.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "FC Vaduz",
+          "reputationEstimate": 44,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/d71e9w1532766585.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "BSC Young Boys",
+          "reputationEstimate": 82,
+          "logoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/BSC_Young_Boys_logo.svg",
+          "logoSource": "wikimedia"
+        },
+        {
+          "name": "FC Zürich",
+          "reputationEstimate": 66,
+          "logoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/FC_Zurich_Logo_2022.svg",
+          "logoSource": "wikimedia"
+        }
+      ]
+    }
+  ],
+  "competitions": [
+    {
+      "type": "league",
+      "name": "Swiss Super League",
+      "trophyImageUrl": null,
+      "trophySource": null
+    },
+    {
+      "type": "cup",
+      "name": "Swiss Cup",
+      "trophyImageUrl": "https://r2.thesportsdb.com/images/media/league/trophy/sioo5g1779556450.png",
+      "trophySource": "thesportsdb"
+    },
+    {
+      "type": "continental",
+      "name": "UEFA Champions League",
+      "trophyImageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/39/Champions_League_Trophy_%2852736201132%29.jpg",
+      "trophySource": "wikimedia"
+    },
+    {
+      "type": "continental",
+      "name": "UEFA Europa League",
+      "trophyImageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/42/Europa_league_trophy.jpg",
+      "trophySource": "wikimedia"
+    }
+  ],
+  "notes": [
+    "12-club 2026-27 Swiss Super League roster confirmed via Wikipedia (en.wikipedia.org/wiki/2026%E2%80%9327_Swiss_Super_League): Basel, Grasshopper Club Zürich, Lausanne-Sport, Lugano, Luzern, Servette, Sion, St. Gallen, Thun (defending champions), Vaduz, Young Boys, Zürich. Promoted for 2026-27: FC Vaduz (returning after a five-year absence). Relegated: FC Winterthur (to Challenge League after four seasons up).",
+    "10 of 12 club badges sourced live from TheSportsDB's 'Swiss Super League' team list. That list did not include BSC Young Boys or FC Zürich (two of the league's biggest, most-followed clubs — a real gap in that source, not a lookup mistake); both have a real official crest on Wikimedia Commons and are used from there instead (BSC Young Boys logo.svg; FC Zurich Logo 2022.svg, the club's current 2022-adopted crest).",
+    "No Swiss Super Cup entry: the competition existed 1986-1990 only and has not been revived since (per en.wikipedia.org/wiki/Swiss_Super_Cup) — omitted per instructions rather than fabricated, same policy as Norway's missing super cup elsewhere in this dataset.",
+    "Swiss Cup trophy image sourced live from TheSportsDB's lookupleague.php strTrophy field for idLeague 5489. No working Swiss Super League (top-flight) trophy image was found via TheSportsDB (its league entry didn't resolve for this country under any name variant tried: 'Swiss Super League', 'Credit Suisse Super League') — left as trophyImageUrl: null rather than guessed, same as the handful of other league/cup slots already left null elsewhere in this dataset.",
+    "Continental entries reuse the exact same UEFA Champions League / UEFA Europa League trophy image URLs already used for DE elsewhere in this dataset — same real trophies, Switzerland just wasn't in the original UEFA research pass.",
+    "The Swiss Cup trophy image bundled locally for real in-app display (see TrophyImage.tsx) is a user-supplied image separate from the trophyImageUrl above, which — like the rest of this file's trophyImageUrl fields across the whole dataset — is unused research provenance, not something the app renders directly."
+  ]
+}

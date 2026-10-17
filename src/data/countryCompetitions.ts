@@ -11,6 +11,7 @@ export interface CountryCompetitionEntry {
 // Not every (country, CompetitionId) slot has a verified real trophy PHOTO —
 // where trophyImageUrl is null the name is still real/verified, but no real
 // image could be sourced from TheSportsDB or Wikimedia Commons. Currently:
+//   - CH league: Swiss Super League
 //   - HR domestic-cup: Hrvatski nogometni kup (Croatian Football Cup)
 //   - MA domestic-cup: Throne Cup (Coupe du Trône)
 //   - RS domestic-cup: Serbian Cup (Kup Srbije)
@@ -24,6 +25,7 @@ export const COUNTRY_COMPETITIONS: Record<string, Partial<Record<CompetitionId, 
     "domestic-cup": { name: "Copa Argentina", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Copa_Argentina.jpg/960px-Copa_Argentina.jpg" },
     "super-cup": { name: "Supercopa Argentina", trophyImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Logotipo_de_la_Supercopa_Argentina_de_F%C3%BAtbol.svg" },
     "continental-cup": { name: "CONMEBOL Copa Libertadores", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7a/328-3287452_copa-libertadores-primer-trofeo-hd-png-download.png" },
+    "europa-league": { name: "CONMEBOL Copa Sudamericana", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/17/Ta%C3%A7a_da_Copa_Sul-Americana_de_2016.jpg" },
   },
   "BE": {
     "league": { name: "Belgian Pro League", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/2/26/Belgian_Pro_League_logo_%282020%2C_boxed%29.svg" },
@@ -35,12 +37,20 @@ export const COUNTRY_COMPETITIONS: Record<string, Partial<Record<CompetitionId, 
     "domestic-cup": { name: "Copa do Brasil", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Copa_do_Brasil_logo_%282018%29.svg/960px-Copa_do_Brasil_logo_%282018%29.svg.png" },
     "super-cup": { name: "Supercopa do Brasil", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Supercopa_Rei_logo_%282023%29.svg/960px-Supercopa_Rei_logo_%282023%29.svg.png" },
     "continental-cup": { name: "CONMEBOL Copa Libertadores", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7a/328-3287452_copa-libertadores-primer-trofeo-hd-png-download.png" },
+    "europa-league": { name: "CONMEBOL Copa Sudamericana", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/17/Ta%C3%A7a_da_Copa_Sul-Americana_de_2016.jpg" },
+  },
+  "CH": {
+    "league": { name: "Swiss Super League", trophyImageUrl: null },
+    "domestic-cup": { name: "Swiss Cup", trophyImageUrl: "https://r2.thesportsdb.com/images/media/league/trophy/sioo5g1779556450.png" },
+    "continental-cup": { name: "UEFA Champions League", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/39/Champions_League_Trophy_%2852736201132%29.jpg" },
+    "europa-league": { name: "UEFA Europa League", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/42/Europa_league_trophy.jpg" },
   },
   "CO": {
     "league": { name: "Categoría Primera A", trophyImageUrl: "https://r2.thesportsdb.com/images/media/league/trophy/6axlxc1696412612.png" },
     "domestic-cup": { name: "Copa Colombia (Copa BetPlay Dimayor)", trophyImageUrl: "https://r2.thesportsdb.com/images/media/league/trophy/w2brvd1702705447.png" },
     "super-cup": { name: "Superliga Colombiana (Superliga BetPlay Dimayor)", trophyImageUrl: "https://r2.thesportsdb.com/images/media/league/trophy/dev0ek1776271167.png" },
     "continental-cup": { name: "CONMEBOL Copa Libertadores", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Trof%C3%A9u_da_Copa_Libertadores_da_Am%C3%A9rica_de_2023.jpg" },
+    "europa-league": { name: "CONMEBOL Copa Sudamericana", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/17/Ta%C3%A7a_da_Copa_Sul-Americana_de_2016.jpg" },
   },
   "DE": {
     "league": { name: "Bundesliga", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Meisterschale-10.svg" },
@@ -48,6 +58,13 @@ export const COUNTRY_COMPETITIONS: Record<string, Partial<Record<CompetitionId, 
     "super-cup": { name: "DFL-Supercup", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Replik_des_DFL_Supercup%2C_FC_Bayern_Erlebniswelt.jpg" },
     "continental-cup": { name: "UEFA Champions League", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/3/39/Champions_League_Trophy_%2852736201132%29.jpg" },
     "europa-league": { name: "UEFA Europa League", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/42/Europa_league_trophy.jpg" },
+  },
+  "EC": {
+    "league": { name: "LigaPro Serie A", trophyImageUrl: "https://r2.thesportsdb.com/images/media/league/trophy/trq1b41716301832.png" },
+    "domestic-cup": { name: "Copa Ecuador", trophyImageUrl: "https://r2.thesportsdb.com/images/media/league/trophy/gghphb1776553146.png" },
+    "super-cup": { name: "Supercopa Ecuador", trophyImageUrl: "https://r2.thesportsdb.com/images/media/league/trophy/4aoj0r1782708554.png" },
+    "continental-cup": { name: "CONMEBOL Copa Libertadores", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7a/328-3287452_copa-libertadores-primer-trofeo-hd-png-download.png" },
+    "europa-league": { name: "CONMEBOL Copa Sudamericana", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/17/Ta%C3%A7a_da_Copa_Sul-Americana_de_2016.jpg" },
   },
   "EN": {
     "league": { name: "Premier League", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/f/f2/Premier_League_Trophy_at_Manchester%27s_National_Football_Museum_%28Ank_Kumar%29_01.jpg" },
@@ -139,6 +156,7 @@ export const COUNTRY_COMPETITIONS: Record<string, Partial<Record<CompetitionId, 
     "domestic-cup": { name: "Copa AUF Uruguay", trophyImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/COPA_AUFURUGUAY.png" },
     "super-cup": { name: "Supercopa Uruguaya", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/4/45/Logo_Supercopa_Uruguaya.png" },
     "continental-cup": { name: "CONMEBOL Copa Libertadores", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7a/328-3287452_copa-libertadores-primer-trofeo-hd-png-download.png" },
+    "europa-league": { name: "CONMEBOL Copa Sudamericana", trophyImageUrl: "https://upload.wikimedia.org/wikipedia/commons/1/17/Ta%C3%A7a_da_Copa_Sul-Americana_de_2016.jpg" },
   },
 };
 

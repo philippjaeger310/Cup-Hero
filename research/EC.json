@@ -1,0 +1,149 @@
+{
+  "country": "Ecuador",
+  "code": "EC",
+  "season": "2026/27",
+  "divisions": [
+    {
+      "tier": 1,
+      "leagueName": "LigaPro Serie A (2026 season)",
+      "clubs": [
+        {
+          "name": "Aucas",
+          "reputationEstimate": 64,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/6vf1py1770395139.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Barcelona SC",
+          "reputationEstimate": 75,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/c5yr001653075296.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Delfín",
+          "reputationEstimate": 56,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/drhsv91579961166.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Deportivo Cuenca",
+          "reputationEstimate": 50,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/lb2br81736221977.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Emelec",
+          "reputationEstimate": 70,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/15ovlq1579959696.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Guayaquil City",
+          "reputationEstimate": 44,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/9lgwun1740586446.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Independiente del Valle",
+          "reputationEstimate": 78,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/qku0lv1737622736.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "LDU Quito",
+          "reputationEstimate": 76,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/5tf5ch1736404372.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Leones",
+          "reputationEstimate": 42,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/q8yw9a1734021908.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Libertad",
+          "reputationEstimate": 46,
+          "logoUrl": "https://r2.thesportsdb.com/images/media/team/badge/cqkwxs1675845340.png",
+          "logoSource": "thesportsdb"
+        },
+        {
+          "name": "Macará",
+          "reputationEstimate": 50,
+          "logoUrl": null,
+          "logoSource": "none-found"
+        },
+        {
+          "name": "Manta",
+          "reputationEstimate": 44,
+          "logoUrl": null,
+          "logoSource": "none-found"
+        },
+        {
+          "name": "Mushuc Runa",
+          "reputationEstimate": 46,
+          "logoUrl": null,
+          "logoSource": "none-found"
+        },
+        {
+          "name": "Orense",
+          "reputationEstimate": 45,
+          "logoUrl": null,
+          "logoSource": "none-found"
+        },
+        {
+          "name": "Técnico Universitario",
+          "reputationEstimate": 48,
+          "logoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T%C3%A9cnico_Universitario.png",
+          "logoSource": "wikimedia"
+        },
+        {
+          "name": "Universidad Católica",
+          "reputationEstimate": 55,
+          "logoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Club_Deportivo_Universidad_Cat%C3%B3lica_del_Ecuador_Logo.svg",
+          "logoSource": "wikimedia"
+        }
+      ]
+    }
+  ],
+  "competitions": [
+    {
+      "type": "league",
+      "name": "LigaPro Serie A",
+      "trophyImageUrl": "https://r2.thesportsdb.com/images/media/league/trophy/trq1b41716301832.png",
+      "trophySource": "thesportsdb"
+    },
+    {
+      "type": "cup",
+      "name": "Copa Ecuador",
+      "trophyImageUrl": "https://r2.thesportsdb.com/images/media/league/trophy/gghphb1776553146.png",
+      "trophySource": "thesportsdb"
+    },
+    {
+      "type": "supercup",
+      "name": "Supercopa Ecuador",
+      "trophyImageUrl": "https://r2.thesportsdb.com/images/media/league/trophy/4aoj0r1782708554.png",
+      "trophySource": "thesportsdb"
+    },
+    {
+      "type": "continental",
+      "name": "CONMEBOL Copa Libertadores",
+      "trophyImageUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7a/328-3287452_copa-libertadores-primer-trofeo-hd-png-download.png",
+      "trophySource": "wikimedia"
+    },
+    {
+      "type": "continental",
+      "name": "CONMEBOL Copa Sudamericana",
+      "trophyImageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/17/Ta%C3%A7a_da_Copa_Sul-Americana_de_2016.jpg",
+      "trophySource": "wikimedia"
+    }
+  ],
+  "notes": [
+    "16-club 2026 LigaPro Serie A roster confirmed via Wikipedia (en.wikipedia.org/wiki/2026_LigaPro_Serie_A): Aucas, Barcelona SC, Delfín, Deportivo Cuenca, Emelec, Guayaquil City, Independiente del Valle, LDU Quito, Leones, Libertad, Macará, Manta, Mushuc Runa, Orense, Técnico Universitario, Universidad Católica. Promoted for 2026: Guayaquil City and Leones (from Serie B). The same source's prose also listed Técnico Universitario as relegated 'from the 2025 season' alongside Vinotinto Ecuador, which contradicts its own 16-club table listing Técnico Universitario as a 2026 participant — treated the table (the definitive current-season list) as authoritative over that one contradictory sentence, most likely stale wording left over from an earlier revision of the article.",
+    "10 of 16 club badges sourced live from TheSportsDB's 'Ecuadorian Serie A' team list. That list is missing 6 smaller/newly-promoted clubs (Macará, Manta, Mushuc Runa, Orense, Técnico Universitario, Universidad Católica) even though they're all 2026 top-flight sides — checking TheSportsDB's 'Ecuadorian Serie B' list and alternate league-name spellings didn't surface them either, so this is a real gap in that source, not a lookup mistake. Técnico Universitario and Universidad Católica each have a real crest on Wikimedia Commons and are used from there; Macará, Manta, Mushuc Runa and Orense have no crest file found on Commons or TheSportsDB — left as logoUrl: null (ClubBadge's built-in initials/color fallback covers these, same as any other club with a genuinely unfound crest elsewhere in this dataset).",
+    "Ecuador is CONMEBOL, so — same as AR/BR/CO/UY — it lists both CONMEBOL Copa Libertadores (continental-cup slot) and CONMEBOL Copa Sudamericana (europa-league slot, added to merge.py's SECOND_TIER_CONTINENTAL_NAMES this same session) using the identical, already-verified trophy image URLs used for those four countries.",
+    "Supercopa Ecuador is an active, currently-running competition (2026 edition: Independiente del Valle 3-0 Universidad Católica, per en.wikipedia.org/wiki/2026_Supercopa_Ecuador) — included as super-cup, not omitted.",
+    "All trophy images (league, cup, supercup) sourced live from TheSportsDB's lookupleague.php strTrophy field for idLeague 4686 (Ecuadorian Serie A), 5636 (Copa Ecuador), and 5884 (Supercopa Ecuador) respectively.",
+    "The LigaPro Serie A trophy image bundled locally for real in-app display (see TrophyImage.tsx) is a user-supplied image separate from the trophyImageUrl above, which — like the rest of this file's trophyImageUrl fields across the whole dataset — is unused research provenance, not something the app renders directly."
+  ]
+}

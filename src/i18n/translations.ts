@@ -163,6 +163,7 @@ export const translations = {
       'europa-league': 'Europa Cup',
       'club-world-cup': 'FIFA Club World Cup',
       'world-cup': 'FIFA World Cup',
+      'euro-championship': 'UEFA European Championship',
     },
     summary: {
       title: 'Your career has come to an end',
@@ -201,6 +202,9 @@ export const translations = {
       seasonsHeadersFooter: 'L = on loan that season',
       playAgain: 'Play Again',
       backToGames: 'Back to Games',
+      share: 'Share Career',
+      sharing: 'Preparing...',
+      shareDialogTitle: 'Share your Cup Hero career',
     },
     achievements: {
       title: 'Career Achievements',
@@ -380,6 +384,7 @@ export const translations = {
       'europa-league': 'Europapokal',
       'club-world-cup': 'FIFA-Klub-Weltmeisterschaft',
       'world-cup': 'FIFA-Weltmeisterschaft',
+      'euro-championship': 'UEFA-Europameisterschaft',
     },
     summary: {
       title: 'Deine Karriere ist zu Ende',
@@ -418,6 +423,9 @@ export const translations = {
       seasonsHeadersFooter: 'L = in dieser Saison ausgeliehen',
       playAgain: 'Nochmal spielen',
       backToGames: 'Zurück zu den Spielen',
+      share: 'Karriere teilen',
+      sharing: 'Wird vorbereitet...',
+      shareDialogTitle: 'Teile deine Cup-Hero-Karriere',
     },
     achievements: {
       title: 'Karriere-Erfolge',
