@@ -87,6 +87,13 @@ export interface SeasonRecord {
   onLoan?: boolean;
   tier: 'early' | 'peak' | 'normal';
   noteKey?: string; // key into EVENT_NOTES for a localized short note, e.g. "adapted-new-role"
+  /**
+   * Result of a deferred EventChoiceEffect.riskReward resolution for this
+   * season (see simulateSeason() in careerEngine.ts) — set only on a season
+   * where such a choice was made. Drives the season recap popup's
+   * "paid off" / "backfired" messaging.
+   */
+  riskRewardOutcome?: { success: boolean; ovrDelta: number; noteKey?: string };
 }
 
 export type CompetitionId =
@@ -96,7 +103,8 @@ export type CompetitionId =
   | 'continental-cup'
   | 'europa-league' // second-tier continental prize, for clubs a notch below continental-cup level
   | 'club-world-cup' // global, not country-scoped — the rarest club prize, for the very top continental-cup winners
-  | 'world-cup'; // national-team prize — gated on state.nationalTeamCaps/ovr, not club reputation; see maybeWorldCup()
+  | 'world-cup' // national-team prize — gated on state.nationalTeamCaps/ovr, not club reputation; see maybeWorldCup()
+  | 'euro-championship'; // national-team prize, same gating as 'world-cup'; see maybeEuro()
 
 export interface Trophy {
   id: string;
@@ -180,7 +188,7 @@ export interface PostSeasonOptions {
   loanOffer: Club | null;
   canStay: boolean;
   canRetire: boolean;
-  forcedNote: 'contract-not-renewed' | 'loan-return-not-retained' | null;
+  forcedNote: 'contract-not-renewed' | 'loan-return-not-retained' | 'foreign-move-pending' | null;
   loanReturnedRetained: boolean | null;
 }
 
@@ -203,6 +211,35 @@ export type EventChoiceEffect = {
    * pickWeightedEvent() for how that then keeps events from repeating.
    */
   eventId?: string;
+  /**
+   * A genuine risk/reward instead of a flat `ovrDelta` — resolved in
+   * simulateSeason() AFTER that season's performance (apps, output, trophy)
+   * is known, via seasonOutcomeQuality()/resolveRiskReward() in
+   * careerEngine.ts, not at the moment the choice is made. successRange is
+   * applied on a successful season, failureRange otherwise. Lets e.g.
+   * accepting the captaincy swing well above a guaranteed `ovrDelta` on a
+   * good season, or below it on a bad one, instead of a risk-free number.
+   */
+  riskReward?: {
+    successRange: [number, number];
+    failureRange: [number, number];
+    successNoteKey?: string;
+    failureNoteKey?: string;
+  };
+  /**
+   * This choice (e.g. accepting a move abroad) commits the player to an
+   * actual transfer — resolvePostSeason() forces real foreign-club offers
+   * instead of the normal interest roll, with forcedNote
+   * 'foreign-move-pending'. See generateForeignClubOffers() in careerEngine.ts.
+   */
+  foreignMove?: boolean;
+  /**
+   * This choice (planning a farewell season) guarantees the following
+   * postSeason screen offers BOTH a real transfer choice and the retire
+   * option together, instead of leaving that to the normal interest/age
+   * rolls. See resolvePostSeason() in careerEngine.ts.
+   */
+  guaranteedRetireOption?: boolean;
 };
 
 export interface EventChoice {
@@ -266,4 +303,16 @@ export interface IdeologyResultProfile {
   name: LocalizedText;
   description: LocalizedText;
   matches: (scores: Record<IdeologyQuestion['options'][number]['axis'], number>) => boolean;
+  /**
+   * Which real manager's well-documented tactical identity this profile's
+   * axis combination resembles (user feedback: show which coaching style
+   * the quiz result corresponds to) — a factual style comparison, not a
+   * quote or claim attributed to that person. `name` is the manager's own
+   * name (a proper noun, not localized); `blurb` is a short, factual,
+   * widely-known description of the shared tactical trait.
+   */
+  managerComparison?: {
+    name: string;
+    blurb: LocalizedText;
+  };
 }

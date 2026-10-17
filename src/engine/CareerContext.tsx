@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { IndividualAward, PlayerIdentity, PlayerState, PostSeasonOptions, RetirementReason, Trophy } from '../types';
+import { IndividualAward, PlayerIdentity, PlayerState, PostSeasonOptions, RetirementReason, SeasonRecord, Trophy } from '../types';
 import { acceptLoan, applyTransfer, initializePlayer, simulateSeason } from './careerEngine';
 import { archiveCareer, clearActiveCareer, loadActiveCareer, saveActiveCareer } from '../storage/careerStorage';
 import { EventChoiceEffect } from '../types';
@@ -8,7 +8,10 @@ interface CareerContextValue {
   player: PlayerState | null;
   loading: boolean;
   lastNewAchievements: string[];
-  lastTrophy: Trophy | null;
+  /** The season just completed, for the season-recap popup — null once dismissed. */
+  lastSeasonRecap: SeasonRecord | null;
+  /** Every trophy won in that just-completed season (plural — a treble is possible). */
+  lastSeasonTrophies: Trophy[];
   lastIndividualAward: IndividualAward | null;
   /** What the player can do after the season just simulated. Null once resolved. */
   postSeason: PostSeasonOptions | null;
@@ -28,7 +31,7 @@ interface CareerContextValue {
   chooseLoan: () => Promise<PlayerState | null>;
   /** End the career by choice (only valid when postSeason.canRetire). */
   retire: () => Promise<void>;
-  dismissTrophy: () => void;
+  dismissSeasonRecap: () => void;
   dismissAward: () => void;
   discardCareer: () => Promise<void>;
 }
@@ -39,7 +42,8 @@ export function CareerProvider({ children }: { children: React.ReactNode }) {
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastNewAchievements, setLastNewAchievements] = useState<string[]>([]);
-  const [lastTrophy, setLastTrophy] = useState<Trophy | null>(null);
+  const [lastSeasonRecap, setLastSeasonRecap] = useState<SeasonRecord | null>(null);
+  const [lastSeasonTrophies, setLastSeasonTrophies] = useState<Trophy[]>([]);
   const [lastIndividualAward, setLastIndividualAward] = useState<IndividualAward | null>(null);
   const [postSeason, setPostSeason] = useState<PostSeasonOptions | null>(null);
 
@@ -53,7 +57,8 @@ export function CareerProvider({ children }: { children: React.ReactNode }) {
     const fresh = initializePlayer(identity, clubId);
     setPlayer(fresh);
     setLastNewAchievements([]);
-    setLastTrophy(null);
+    setLastSeasonRecap(null);
+    setLastSeasonTrophies([]);
     setLastIndividualAward(null);
     setPostSeason(null);
     await saveActiveCareer(fresh);
@@ -66,7 +71,8 @@ export function CareerProvider({ children }: { children: React.ReactNode }) {
       const result = simulateSeason(base, effect);
       setPlayer(result.state);
       setLastNewAchievements(result.newAchievementIds);
-      setLastTrophy(result.trophy);
+      setLastSeasonRecap(result.record);
+      setLastSeasonTrophies(result.trophies);
       setLastIndividualAward(result.individualAward);
       setPostSeason(result.state.retired ? null : result.postSeason);
       await saveActiveCareer(result.state);
@@ -112,13 +118,17 @@ export function CareerProvider({ children }: { children: React.ReactNode }) {
     await archiveCareer(finalState);
   }, [player, postSeason]);
 
-  const dismissTrophy = useCallback(() => setLastTrophy(null), []);
+  const dismissSeasonRecap = useCallback(() => {
+    setLastSeasonRecap(null);
+    setLastSeasonTrophies([]);
+  }, []);
   const dismissAward = useCallback(() => setLastIndividualAward(null), []);
 
   const discardCareer = useCallback(async () => {
     setPlayer(null);
     setLastNewAchievements([]);
-    setLastTrophy(null);
+    setLastSeasonRecap(null);
+    setLastSeasonTrophies([]);
     setLastIndividualAward(null);
     setPostSeason(null);
     await clearActiveCareer();
@@ -130,7 +140,8 @@ export function CareerProvider({ children }: { children: React.ReactNode }) {
         player,
         loading,
         lastNewAchievements,
-        lastTrophy,
+        lastSeasonRecap,
+        lastSeasonTrophies,
         lastIndividualAward,
         postSeason,
         startCareer,
@@ -139,7 +150,7 @@ export function CareerProvider({ children }: { children: React.ReactNode }) {
         stay,
         chooseLoan,
         retire,
-        dismissTrophy,
+        dismissSeasonRecap,
         dismissAward,
         discardCareer,
       }}

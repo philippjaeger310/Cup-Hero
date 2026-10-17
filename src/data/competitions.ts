@@ -14,4 +14,6 @@ export const COMPETITIONS: Record<CompetitionId, { rank: 1 | 2 | 3 | 4 | 5; cupC
   'europa-league': { rank: 3, cupColor: '#E08A3E' }, // orange/bronze — a notch below continental-cup
   'super-cup': { rank: 4, cupColor: '#C9C9C9' }, // silver
   'domestic-cup': { rank: 5, cupColor: '#CD9B60' }, // bronze
+  'world-cup': { rank: 1, cupColor: '#F5C542' }, // gold — national-team prize
+  'euro-championship': { rank: 1, cupColor: '#F5C542' }, // gold — national-team prize
 };

@@ -34,7 +34,11 @@ const COMPETITION_IDS: CompetitionId[] = [
 const START_AGE = 16;
 // Exported so the UI can turn an EventChoiceEffect's appsShare into an
 // approximate "games this season" number when previewing event choices —
-// see effectChips() in LegendCareerScreen.tsx.
+// see effectChips() in LegendCareerScreen.tsx. This is deliberately the
+// smallest, domestic-only club's match load (see competitionMatchLoad()
+// below) — a representative baseline for event-preview chips, which don't
+// know which club the effect will apply at. The actual season simulation
+// uses competitionMatchLoad(club) instead of this flat constant.
 export const MAX_SEASON_APPS = 34;
 const RETIREMENT_HARD_AGE = 40;
 const RETIREMENT_ELIGIBLE_AGE = 33;
@@ -49,6 +53,26 @@ function rotationLimits(difficulty: PlayerIdentity['difficulty']) {
 }
 const BENCH_APPS_CUTOFF = 8; // apps below this in a season count as "bench"
 const LOW_ROTATION_APPS_CUTOFF = 18; // apps below this count as "low rotation"
+// How many OVR points below the player's own recent peak counts as a
+// genuine decline — see recentFormDeclined() below.
+const FORM_DECLINE_THRESHOLD = 4;
+const FORM_DECLINE_LOOKBACK_SEASONS = 3;
+
+/**
+ * Whether the player's CURRENT OVR is meaningfully below their own OVR from
+ * the last few seasons — the missing ingredient in contract non-renewal.
+ * Without this, a world-class player (e.g. 96 OVR, 30 years old) could lose
+ * their contract purely off a transient low-minutes season, which made no
+ * sense (user feedback): non-renewal should only happen alongside a real,
+ * prior performance/rating drop, not an isolated rotation blip at an
+ * otherwise-peak rating.
+ */
+function recentFormDeclined(state: PlayerState): boolean {
+  const priorSeasons = state.history.slice(0, -1).slice(-FORM_DECLINE_LOOKBACK_SEASONS);
+  if (priorSeasons.length === 0) return false;
+  const peakRecentOvr = Math.max(...priorSeasons.map((r) => r.ovr));
+  return state.ovr <= peakRecentOvr - FORM_DECLINE_THRESHOLD;
+}
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
@@ -248,7 +272,37 @@ function developmentDelta(age: number, profile: DevelopmentProfile): number {
 function baseAppsShare(ovr: number, clubReputation: number): number {
   // Higher OVR relative to club level -> more minutes.
   const edge = clamp((ovr - clubReputation) / 40, -0.4, 0.4);
-  return clamp(0.55 + edge, 0.15, 0.95);
+  let share = clamp(0.55 + edge, 0.15, 0.95);
+  // Elite absolute quality overrides the squad-competition penalty above: a
+  // 90+ OVR player is one of the best in the world and is nearly always
+  // selected, regardless of how stacked the squad around them is — the
+  // `edge` term alone was punishing exactly these players (best-in-world
+  // player at a star-studded reputation-95+ club rolling a *worse* share
+  // than the same OVR at a mid-table side). Own values, floor only ever
+  // raises the share, never lowers it.
+  if (ovr >= 85) {
+    const eliteFloor = clamp(0.72 + (ovr - 85) / 70, 0.72, 0.95);
+    share = Math.max(share, eliteFloor);
+  }
+  return share;
+}
+
+/**
+ * Realistic total "games this season" figure for a club, across every
+ * competition it plausibly plays — league + domestic cup + super cup +
+ * continental, where applicable — instead of one flat number for every
+ * club. A top continental regular (tier 1, high reputation) plays far more
+ * matches across a season than a domestic-only mid-table side, which is
+ * what made a 90+ OVR Real Madrid player cap out at ~17 total appearances
+ * even though the league alone is 38 games before cups/Champions League.
+ * Own values, not a real fixture simulator — reputation smoothly scales the
+ * total within each tier band so clubs within a tier aren't identical.
+ */
+function competitionMatchLoad(club: Club): number {
+  const repBonus = clamp((club.reputation - 60) / 10, 0, 4);
+  if (club.tier === 1) return Math.round(50 + repBonus * 2); // ~50-58: league + cups + continental cup
+  if (club.tier === 2) return Math.round(40 + repBonus * 1.5); // ~40-46: league + cup + occasional Europa-tier run
+  return Math.round(34 + repBonus); // ~34-38: league + domestic cup only
 }
 
 function goalsAndAssistsFor(position: Position, apps: number, ovr: number): { goals: number; assists: number } {
@@ -297,18 +351,27 @@ const TROPHY_PROBABILITY: Record<CompetitionId, number[]> = {
   'continental-cup': [0, 0.01, 0.05, 0.14, 0.3],
   'europa-league': [0, 0.03, 0.07, 0.06, 0.02],
   'club-world-cup': [0, 0, 0, 0, 0.035],
-  // 'world-cup' isn't rolled from this reputation-tiered table at all — see
-  // maybeWorldCup() below, which is keyed off the PLAYER's national-team
-  // caps/OVR instead of the acting club's reputation. Present here only so
-  // the Record<CompetitionId, ...> type stays exhaustive.
+  // 'world-cup' and 'euro-championship' aren't rolled from this
+  // reputation-tiered table at all — see maybeWorldCup()/maybeEuro() below,
+  // which are keyed off the PLAYER's national-team caps/OVR instead of the
+  // acting club's reputation. Present here only so the
+  // Record<CompetitionId, ...> type stays exhaustive.
   'world-cup': [0, 0, 0, 0, 0],
+  'euro-championship': [0, 0, 0, 0, 0],
 };
 
 function reputationTier(reputation: number): number {
   return clamp(Math.floor(reputation / 20), 0, 4);
 }
 
-function maybeTrophy(state: PlayerState, club: Club): Trophy | null {
+/**
+ * Every club competition rolls independently now (user feedback: a treble —
+ * league + domestic cup + continental cup in the same season — should be
+ * structurally possible, not just one trophy per season by construction).
+ * Still realistically rare in practice, since every relevant roll has to
+ * land the same season; see TROPHY_PROBABILITY for the per-competition odds.
+ */
+function rollClubTrophies(state: PlayerState, club: Club): Trophy[] {
   const tier = reputationTier(club.reputation);
   const qualityFactor = clamp(0.7 + (state.ovr - club.reputation) / 100, 0.5, 1.5);
   let won = COMPETITION_IDS.filter((id) => Math.random() < TROPHY_PROBABILITY[id][tier] * qualityFactor);
@@ -318,12 +381,14 @@ function maybeTrophy(state: PlayerState, club: Club): Trophy | null {
   if (won.includes('europa-league') && !getRealCompetition(club.country, 'europa-league')) {
     won = won.filter((id) => id !== 'europa-league');
   }
-  if (won.length === 0) return null;
-  // At most one trophy per season keeps the trophy case readable; pick the
-  // most prestigious competition if several rolled true.
   const priority: CompetitionId[] = ['club-world-cup', 'continental-cup', 'league', 'europa-league', 'super-cup', 'domestic-cup'];
-  const competitionId = priority.find((id) => won.includes(id)) ?? won[0];
-  return { id: `${state.season}-${club.id}-${competitionId}`, competitionId, season: state.season, clubId: club.id };
+  const ordered = priority.filter((id) => won.includes(id));
+  return ordered.map((competitionId) => ({
+    id: `${state.season}-${club.id}-${competitionId}`,
+    competitionId,
+    season: state.season,
+    clubId: club.id,
+  }));
 }
 
 // World Cup probability by the PLAYER's own quality tier (0..4, from OVR) —
@@ -338,6 +403,19 @@ function maybeWorldCup(state: PlayerState): Trophy | null {
   const tier = clamp(Math.floor((state.ovr - 60) / 8), 0, 4);
   if (Math.random() < WORLD_CUP_PROBABILITY[tier]) {
     return { id: `${state.season}-world-cup`, competitionId: 'world-cup', season: state.season, clubId: state.currentClubId };
+  }
+  return null;
+}
+
+// Same gating/shape as maybeWorldCup() — own values, not modeling the real
+// (offset) 4-year Euros cadence.
+const EURO_PROBABILITY = [0, 0.006, 0.014, 0.024, 0.04];
+
+function maybeEuro(state: PlayerState): Trophy | null {
+  if (state.nationalTeamCaps < 5 || state.ovr < 74) return null;
+  const tier = clamp(Math.floor((state.ovr - 60) / 8), 0, 4);
+  if (Math.random() < EURO_PROBABILITY[tier]) {
+    return { id: `${state.season}-euro-championship`, competitionId: 'euro-championship', season: state.season, clubId: state.currentClubId };
   }
   return null;
 }
@@ -384,6 +462,62 @@ export function generateTransferOffers(state: PlayerState): Club[] {
   scored.sort((a, b) => b.score - a.score);
 
   return scored.slice(0, MAX_OFFERS).map((s) => s.club);
+}
+
+/**
+ * Same idea as generateTransferOffers(), restricted to clubs outside the
+ * player's CURRENT club's country — used to back a committed "move abroad"
+ * decision (EventChoiceEffect.foreignMove) with actual foreign clubs to
+ * pick from, instead of silently leaving the player at the same club. See
+ * resolvePostSeason()'s 'foreign-move-pending' branch.
+ */
+export function generateForeignClubOffers(state: PlayerState): Club[] {
+  const current = getClub(state.currentClubId);
+  const outgrown = state.ovr - current.reputation >= 15;
+
+  const candidates = CLUBS.filter((c) => c.country !== current.country);
+  const scored = candidates.map((c) => {
+    const repFit = -Math.abs(c.reputation - state.ovr);
+    const upwardBonus = outgrown && c.tier < current.tier ? 20 : 0;
+    return { club: c, score: repFit + upwardBonus };
+  });
+  scored.sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, MAX_OFFERS).map((s) => s.club);
+}
+
+/**
+ * How well this season actually went, 0..1 — combines team success (a
+ * trophy this season) with the player's own output (minutes played relative
+ * to the club's full match load, plus goals+assists). Used to resolve a
+ * deferred EventChoiceEffect.riskReward (captaincy / mentor role / buying
+ * into a new coach) AFTER the season's performance is known, rather than
+ * guaranteeing the same outcome regardless of how the season actually went.
+ * Own weights: trophy counts for half, playing time 30%, output 20%.
+ */
+function seasonOutcomeQuality(apps: number, matchLoad: number, goals: number, assists: number, trophyWonThisSeason: boolean): number {
+  const playTimeScore = clamp(apps / matchLoad, 0, 1);
+  const outputScore = clamp((goals + assists) / 15, 0, 1);
+  const trophyScore = trophyWonThisSeason ? 1 : 0;
+  return clamp(trophyScore * 0.5 + playTimeScore * 0.3 + outputScore * 0.2, 0, 1);
+}
+
+/**
+ * Rolls success/failure for a deferred riskReward effect, weighted by this
+ * season's outcome quality (0..1): a poor season still has a modest (~25%)
+ * chance of a positive outcome, a great one (~90%) chance — then returns the
+ * OVR delta from whichever range applies. Own curve.
+ */
+function resolveRiskReward(
+  riskReward: NonNullable<EventChoiceEffect['riskReward']>,
+  quality: number
+): { success: boolean; ovrDelta: number; noteKey?: string } {
+  const successChance = clamp(0.25 + quality * 0.65, 0.1, 0.9);
+  const success = Math.random() < successChance;
+  const range = success ? riskReward.successRange : riskReward.failureRange;
+  const ovrDelta = Math.round(randomBetween(range[0], range[1]));
+  const noteKey = success ? riskReward.successNoteKey : riskReward.failureNoteKey;
+  return { success, ovrDelta, noteKey };
 }
 
 /** Occasional loan proposal for a young, fringe player (own odds). */
@@ -436,7 +570,12 @@ export interface SeasonResult {
   state: PlayerState;
   record: SeasonRecord;
   newAchievementIds: string[];
-  trophy: Trophy | null;
+  /**
+   * Every trophy won THIS season (plural — see rollClubTrophies(), a treble
+   * is now structurally possible), national-team prizes included. Empty
+   * array, never null, when nothing was won.
+   */
+  trophies: Trophy[];
   individualAward: IndividualAward | null;
   postSeason: PostSeasonOptions;
 }
@@ -467,21 +606,36 @@ export function simulateSeason(prevState: PlayerState, chosenEffect?: EventChoic
 
   state.ovr = clamp(Math.round(state.ovr + effect.ovrDelta), 40, 99);
 
-  const apps = clamp(Math.round(effect.appsShare * MAX_SEASON_APPS + randomBetween(-2, 2)), 0, MAX_SEASON_APPS);
+  const matchLoad = competitionMatchLoad(club);
+  const apps = clamp(Math.round(effect.appsShare * matchLoad + randomBetween(-2, 2)), 0, matchLoad);
   const { goals, assists } = goalsAndAssistsFor(state.identity.position, apps, state.ovr);
   const gkStats = state.identity.position === 'GK' ? goalkeeperStatsFor(apps, state.ovr) : null;
 
   state.value = Math.round(estimateValue(state.ovr, state.age, club.reputation) * effect.valueMultiplier);
 
-  // Trophy roll for the season. World Cup (national team, not club-based)
-  // takes priority over a club trophy if both roll true — at most one
-  // trophy per season either way, see maybeTrophy()'s doc comment.
-  const trophy = maybeWorldCup(state) ?? maybeTrophy(state, club);
-  if (trophy) state.trophies.push(trophy);
+  // Trophy rolls for the season — every competition rolls independently now
+  // (see rollClubTrophies()), so a treble is structurally possible. National
+  // team prizes are rolled alongside, not instead of, club trophies.
+  const trophies = [maybeWorldCup(state), maybeEuro(state), ...rollClubTrophies(state, club)].filter(
+    (t): t is Trophy => t !== null
+  );
+  state.trophies.push(...trophies);
 
   // Individual award roll.
   const individualAward = maybeIndividualAward(state, apps, goals);
   if (individualAward) state.individualAwards.push(individualAward);
+
+  // Deferred risk/reward resolution (captaincy / mentor role / buying into
+  // a new coach) — resolved AFTER this season's performance is known, using
+  // it as the success/failure signal, instead of a flat guaranteed
+  // ovrDelta. See EventChoiceEffect.riskReward's doc comment.
+  let riskRewardOutcome: SeasonRecord['riskRewardOutcome'];
+  if (chosenEffect?.riskReward) {
+    const quality = seasonOutcomeQuality(apps, matchLoad, goals, assists, trophies.length > 0);
+    const outcome = resolveRiskReward(chosenEffect.riskReward, quality);
+    state.ovr = clamp(state.ovr + outcome.ovrDelta, 40, 99);
+    riskRewardOutcome = outcome;
+  }
 
   // National team caps once the player is good enough and old enough.
   if (state.ovr >= 74 && state.age >= NATIONAL_TEAM_MIN_AGE) {
@@ -524,6 +678,7 @@ export function simulateSeason(prevState: PlayerState, chosenEffect?: EventChoic
     onLoan: wasOnLoan,
     tier,
     noteKey: effect.noteKey,
+    riskRewardOutcome,
   };
   state.history.push(record);
 
@@ -550,8 +705,11 @@ export function simulateSeason(prevState: PlayerState, chosenEffect?: EventChoic
     state.consecutiveBenchSeasons = apps < BENCH_APPS_CUTOFF ? state.consecutiveBenchSeasons + 1 : 0;
     state.consecutiveLowRotationSeasons = apps < LOW_ROTATION_APPS_CUTOFF ? state.consecutiveLowRotationSeasons + 1 : 0;
   }
-  state.contractAtRisk =
+  const rotationRisk =
     state.consecutiveBenchSeasons >= limits.bench || state.consecutiveLowRotationSeasons >= limits.lowRotation;
+  // Both conditions now required — low minutes alone is no longer enough,
+  // see recentFormDeclined()'s doc comment.
+  state.contractAtRisk = rotationRisk && recentFormDeclined(state);
   if (state.contractAtRisk) state.everContractAtRisk = true;
 
   // Resolve a loan return, if this was the loan season.
@@ -590,13 +748,32 @@ export function simulateSeason(prevState: PlayerState, chosenEffect?: EventChoic
 
   const postSeason: PostSeasonOptions = state.retired
     ? { offers: [], loanOffer: null, canStay: true, canRetire: false, forcedNote: null, loanReturnedRetained: null }
-    : resolvePostSeason(state, loanReturnedRetained);
+    : resolvePostSeason(state, loanReturnedRetained, chosenEffect);
 
-  return { state, record, newAchievementIds, trophy, individualAward, postSeason };
+  return { state, record, newAchievementIds, trophies, individualAward, postSeason };
 }
 
-function resolvePostSeason(state: PlayerState, loanReturnedRetained: boolean | null): PostSeasonOptions {
+function resolvePostSeason(
+  state: PlayerState,
+  loanReturnedRetained: boolean | null,
+  chosenEffect?: EventChoiceEffect
+): PostSeasonOptions {
   const canRetireByAge = state.age >= RETIREMENT_ELIGIBLE_AGE;
+
+  // A committed "move abroad" choice takes priority over everything else
+  // this season: force real foreign-club offers instead of leaving the
+  // player at the same club (the normal interest roll might not even fire,
+  // or might only offer domestic clubs). See EventChoiceEffect.foreignMove.
+  if (chosenEffect?.foreignMove) {
+    return {
+      offers: generateForeignClubOffers(state),
+      loanOffer: null,
+      canStay: false,
+      canRetire: canRetireByAge,
+      forcedNote: 'foreign-move-pending',
+      loanReturnedRetained: null,
+    };
+  }
 
   if (loanReturnedRetained === false) {
     return {
@@ -632,11 +809,17 @@ function resolvePostSeason(state: PlayerState, loanReturnedRetained: boolean | n
   }
 
   const lastRecord = state.history[state.history.length - 1];
-  const hasInterest = Math.random() < 0.8;
+  // A just-confirmed farewell season guarantees both a real transfer choice
+  // and the retire option together on this screen, instead of leaving it to
+  // the normal interest/age rolls (user feedback: after planning a farewell
+  // season, retiring early must be offered alongside moving to another
+  // club). See EventChoiceEffect.guaranteedRetireOption.
+  const hasInterest = chosenEffect?.guaranteedRetireOption || Math.random() < 0.8;
   const offers = hasInterest ? generateTransferOffers(state) : [];
   const loanOffer = maybeLoanOffer(state, lastRecord);
+  const canRetire = chosenEffect?.guaranteedRetireOption ? true : canRetireByAge;
 
-  return { offers, loanOffer, canStay: true, canRetire: canRetireByAge, forcedNote: null, loanReturnedRetained: null };
+  return { offers, loanOffer, canStay: true, canRetire, forcedNote: null, loanReturnedRetained: null };
 }
 
 export function nextEventFor(state: PlayerState): CareerEvent | null {

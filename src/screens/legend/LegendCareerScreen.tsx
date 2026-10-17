@@ -7,7 +7,7 @@ import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { ClubBadge } from '../../components/ClubBadge';
 import { SeasonHistoryTable } from '../../components/SeasonHistoryTable';
-import { TrophyModal } from '../../components/TrophyModal';
+import { SeasonRecapModal } from '../../components/SeasonRecapModal';
 import { IndividualAwardModal } from '../../components/IndividualAwardModal';
 import { TrophyCase } from '../../components/TrophyCase';
 import { colors, radius, spacing, typography } from '../../theme';
@@ -61,8 +61,9 @@ export function LegendCareerScreen({ navigation }: Props) {
     player,
     advanceSeason,
     lastNewAchievements,
-    lastTrophy,
-    dismissTrophy,
+    lastSeasonRecap,
+    lastSeasonTrophies,
+    dismissSeasonRecap,
     lastIndividualAward,
     dismissAward,
     postSeason,
@@ -70,7 +71,6 @@ export function LegendCareerScreen({ navigation }: Props) {
     stay,
     chooseLoan,
     retire,
-    discardCareer,
   } = useCareer();
   const { t, pick } = useLanguage();
   const [pendingEvent, setPendingEvent] = useState<CareerEvent | null>(null);
@@ -147,12 +147,16 @@ export function LegendCareerScreen({ navigation }: Props) {
       ? t('career.contractNotRenewed.title')
       : postSeason?.forcedNote === 'loan-return-not-retained'
       ? t('career.loanReturnNotRetained.title')
+      : postSeason?.forcedNote === 'foreign-move-pending'
+      ? t('career.foreignMovePending.title')
       : null;
   const forcedSubtitle =
     postSeason?.forcedNote === 'contract-not-renewed'
       ? t('career.contractNotRenewed.subtitle', { club: club.shortName })
       : postSeason?.forcedNote === 'loan-return-not-retained'
       ? t('career.loanReturnNotRetained.subtitle', { club: club.shortName })
+      : postSeason?.forcedNote === 'foreign-move-pending'
+      ? t('career.foreignMovePending.subtitle')
       : null;
 
   const hasOptionalDecision =
@@ -160,8 +164,15 @@ export function LegendCareerScreen({ navigation }: Props) {
 
   return (
     <Screen scroll style={styles.screenContent}>
-      <TrophyModal trophy={lastTrophy} onDismiss={dismissTrophy} />
-      <IndividualAwardModal award={lastIndividualAward} onDismiss={dismissAward} />
+      <SeasonRecapModal
+        record={lastSeasonRecap}
+        trophies={lastSeasonTrophies}
+        isGk={isGk}
+        onDismiss={dismissSeasonRecap}
+      />
+      {/* Sequenced after the recap: only shows once the recap above has been
+          dismissed, so the two full-screen modals never stack. */}
+      <IndividualAwardModal award={!lastSeasonRecap ? lastIndividualAward : null} onDismiss={dismissAward} />
 
       <View style={styles.headerRow}>
         <Text style={styles.brand}>{t('career.brand')}</Text>
@@ -330,7 +341,11 @@ export function LegendCareerScreen({ navigation }: Props) {
         </Card>
       ) : (
         <>
-          <Button label={t('career.playNextSeason')} onPress={handleNextSeason} style={styles.nextButton} />
+          <Button
+            label={player.season === 0 ? t('career.playFirstSeason') : t('career.playNextSeason')}
+            onPress={handleNextSeason}
+            style={styles.nextButton}
+          />
           {postSeason?.canRetire && (
             <Button label={t('career.retireButton')} variant="ghost" onPress={retire} style={styles.retireGhostButton} />
           )}
@@ -364,10 +379,17 @@ export function LegendCareerScreen({ navigation }: Props) {
         style={styles.viewAchievementsButton}
       />
 
+      {/* Was "Karriere abbrechen" (abandon) calling discardCareer(), which
+          silently wiped the career with no summary/stats/achievements —
+          renamed to match "Karriere beenden" (user feedback) and switched
+          to retire(), which properly archives the career (so its
+          achievements/trophies show up afterward, same fix as the
+          Achievements-screen bug) and lands on the summary screen like any
+          other career end, instead of just vanishing. */}
       <Button
         label={t('career.abandonCareer')}
         variant="ghost"
-        onPress={discardCareer}
+        onPress={retire}
         style={styles.abandonButton}
       />
     </Screen>

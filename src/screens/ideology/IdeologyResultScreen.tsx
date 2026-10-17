@@ -22,6 +22,14 @@ export function IdeologyResultScreen({ route, navigation }: Props) {
       <Text style={styles.title}>{pick(profile.name)}</Text>
       <Text style={styles.description}>{pick(profile.description)}</Text>
 
+      {profile.managerComparison && (
+        <Card style={styles.managerCard}>
+          <Text style={styles.managerLabel}>{t('ideology.result.managerLabel')}</Text>
+          <Text style={styles.managerName}>{profile.managerComparison.name}</Text>
+          <Text style={styles.managerBlurb}>{pick(profile.managerComparison.blurb)}</Text>
+        </Card>
+      )}
+
       <Card style={styles.scoreCard}>
         <ScoreRow label={t('ideology.result.scorePossession')} value={scores.possession - scores.directness} />
         <ScoreRow label={t('ideology.result.scorePressing')} value={scores.pressing} />
@@ -58,6 +66,24 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.textSecondary,
     marginBottom: spacing.lg,
+  },
+  managerCard: {
+    marginBottom: spacing.lg,
+  },
+  managerLabel: {
+    ...typography.caption,
+    color: colors.accent,
+    textTransform: 'uppercase',
+    marginBottom: spacing.xs,
+  },
+  managerName: {
+    ...typography.bodyBold,
+    color: colors.textPrimary,
+  },
+  managerBlurb: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
   },
   scoreCard: {
     marginBottom: spacing.xl,

@@ -112,7 +112,8 @@ export const translations = {
       expectedEffect: 'Likely effect',
       trophiesCapsLine: '🏆 {{trophies}} trophies · 🌍 {{caps}} caps',
       playNextSeason: 'Play Next Season →',
-      abandonCareer: 'Abandon Career',
+      playFirstSeason: 'Start First Season →',
+      abandonCareer: 'End Career',
       historyTitle: 'Career History',
       historyEmpty: 'Play your first season to build your history.',
       historyHeaders: { age: 'Age', club: 'Club', ovr: 'OVR', app: 'APP', g: 'G', a: 'A', cs: 'CS', ga: 'GA' },
@@ -139,6 +140,10 @@ export const translations = {
         title: 'Not Kept On',
         subtitle: 'Your loan spell is over and {{club}} won’t be keeping you. Pick your next step.',
       },
+      foreignMovePending: {
+        title: 'Move Abroad',
+        subtitle: 'You committed to a move abroad — pick your new club.',
+      },
       loanOffer: {
         title: 'Loan Proposal',
         subtitle: 'A club wants to take you on loan for a season.',
@@ -149,6 +154,11 @@ export const translations = {
       trophyModal: {
         title: 'Trophy won!',
         continueButton: 'Nice one →',
+      },
+      recap: {
+        title: 'Season {{n}} Recap',
+        trophiesThisSeason: '🏆 {{count}}x trophy this season',
+        continueButton: 'Continue →',
       },
       awardModal: {
         title: 'Individual Award!',
@@ -218,6 +228,7 @@ export const translations = {
       },
       result: {
         eyebrow: 'Your Football Ideology',
+        managerLabel: 'Closest real-world coaching style',
         scorePossession: 'Possession vs. Directness',
         scorePressing: 'Pressing Intensity',
         scoreIndividualism: 'Individualism',
@@ -333,7 +344,8 @@ export const translations = {
       expectedEffect: 'Voraussichtliche Auswirkung',
       trophiesCapsLine: '🏆 {{trophies}} Titel · 🌍 {{caps}} Länderspiele',
       playNextSeason: 'Nächste Saison spielen →',
-      abandonCareer: 'Karriere abbrechen',
+      playFirstSeason: 'Erste Saison starten →',
+      abandonCareer: 'Karriere beenden',
       historyTitle: 'Karriereverlauf',
       historyEmpty: 'Spiele deine erste Saison, um deine Historie aufzubauen.',
       historyHeaders: { age: 'Alter', club: 'Verein', ovr: 'OVR', app: 'EINS', g: 'T', a: 'V', cs: 'ZN', ga: 'GT' },
@@ -360,6 +372,10 @@ export const translations = {
         title: 'Nicht übernommen',
         subtitle: 'Deine Leihe ist beendet und {{club}} übernimmt dich nicht. Wähle deinen nächsten Schritt.',
       },
+      foreignMovePending: {
+        title: 'Wechsel ins Ausland',
+        subtitle: 'Du hast dem Wechsel ins Ausland zugesagt — wähle deinen neuen Verein.',
+      },
       loanOffer: {
         title: 'Leihangebot',
         subtitle: 'Ein Verein möchte dich für eine Saison ausleihen.',
@@ -369,6 +385,11 @@ export const translations = {
       viewAchievements: 'Erfolge ansehen',
       trophyModal: {
         title: 'Titel gewonnen!',
+        continueButton: 'Weiter →',
+      },
+      recap: {
+        title: 'Rückblick Saison {{n}}',
+        trophiesThisSeason: '🏆 {{count}}x Titel in dieser Saison',
         continueButton: 'Weiter →',
       },
       awardModal: {
@@ -439,6 +460,7 @@ export const translations = {
       },
       result: {
         eyebrow: 'Deine Fußball-Ideologie',
+        managerLabel: 'Ähnlichster realer Trainerstil',
         scorePossession: 'Ballbesitz vs. Direktheit',
         scorePressing: 'Pressing-Intensität',
         scoreIndividualism: 'Individualismus',

@@ -36,14 +36,17 @@ const LIGUE_1 = require('../../assets/trophies/fr-league-ligue1.png');
 const TACA_DE_PORTUGAL = require('../../assets/trophies/pt-cup-taca-de-portugal.png');
 const EUROPA_LEAGUE = require('../../assets/trophies/europa-league.png');
 const COPA_DEL_REY = require('../../assets/trophies/es-cup-copa-del-rey.png');
-const EURO_CHAMPIONSHIP = require('../../assets/trophies/euro-championship.png');
-const PRIMEIRA_LIGA = require('../../assets/trophies/pt-league-primeira-liga.png');
-const BRASILEIRAO = require('../../assets/trophies/br-league-brasileirao.png');
-const EFL_CHAMPIONSHIP = require('../../assets/trophies/en-league2-championship.png');
-const COPA_SUDAMERICANA = require('../../assets/trophies/conmebol-copa-sudamericana.png');
-const LIGUE_2 = require('../../assets/trophies/fr-league2-ligue2.png');
 const LIGAPRO_SERIE_A = require('../../assets/trophies/ec-league-ligapro.png');
 const SWISS_CUP = require('../../assets/trophies/ch-cup-swiss-cup.png');
+// TODO: these 6 bundled images were lost when an earlier sandbox session's
+// container was recycled before they synced to the Mac/GitHub (the research
+// JSON, code and data files survived because later edits re-touched them;
+// these binary assets never got re-touched, so there's nothing to re-sync
+// from — they need to be re-sourced/re-uploaded). Until then the affected
+// competitions fall back to the vector <TrophyCup /> — see localTrophyAsset.
+// Missing: euro-championship.png, pt-league-primeira-liga.png,
+// br-league-brasileirao.png, en-league2-championship.png,
+// conmebol-copa-sudamericana.png, fr-league2-ligue2.png.
 
 /**
  * A real bundled asset for this specific trophy, or null to fall back to
@@ -57,7 +60,8 @@ function localTrophyAsset(trophy: Trophy) {
 
   if (trophy.competitionId === 'world-cup') return WORLD_CUP;
   if (trophy.competitionId === 'club-world-cup') return CLUB_WORLD_CUP;
-  if (trophy.competitionId === 'euro-championship') return EURO_CHAMPIONSHIP;
+  // 'euro-championship': image not available yet, see TODO above — falls
+  // through to the vector <TrophyCup />.
 
   if (trophy.competitionId === 'continental-cup') {
     const real = getRealCompetition(club.country, 'continental-cup');
@@ -71,23 +75,21 @@ function localTrophyAsset(trophy: Trophy) {
     // SECOND_TIER_CONTINENTAL_NAMES) — so this needs the same real-name
     // branch continental-cup already uses, not a flat return.
     const real = getRealCompetition(club.country, 'europa-league');
-    if (real?.name === 'CONMEBOL Copa Sudamericana') return COPA_SUDAMERICANA;
+    // CONMEBOL Copa Sudamericana: image not available yet, see TODO above.
     if (real?.name === 'UEFA Europa League') return EUROPA_LEAGUE;
     return null;
   }
 
   if (trophy.competitionId === 'league') {
     if (club.country === 'DE') return club.division === 2 ? BUNDESLIGA_2 : BUNDESLIGA_1;
-    // EN and FR also have researched division-2 clubs — see clubs.ts — so
-    // these need the same division branch DE already has, not a flat
-    // return. Previously every EN club rendered the Premier League trophy
-    // regardless of division; fixed here.
-    if (club.country === 'EN') return club.division === 2 ? EFL_CHAMPIONSHIP : PREMIER_LEAGUE;
+    // EN and FR also have researched division-2 clubs — see clubs.ts.
+    // EFL Championship / Ligue 2 images not available yet, see TODO above —
+    // division-2 clubs there fall through to the vector <TrophyCup /> for now.
+    if (club.country === 'EN') return club.division === 2 ? null : PREMIER_LEAGUE;
     if (club.country === 'NL') return EREDIVISIE;
     if (club.country === 'IT') return SERIE_A;
-    if (club.country === 'FR') return club.division === 2 ? LIGUE_2 : LIGUE_1;
-    if (club.country === 'PT') return PRIMEIRA_LIGA;
-    if (club.country === 'BR') return BRASILEIRAO;
+    if (club.country === 'FR') return club.division === 2 ? null : LIGUE_1;
+    // Primeira Liga / Brasileirão images not available yet, see TODO above.
     if (club.country === 'EC') return LIGAPRO_SERIE_A;
     return null;
   }

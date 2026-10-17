@@ -1,16 +1,37 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Screen } from '../../components/Screen';
 import { Card } from '../../components/Card';
 import { colors, spacing, typography } from '../../theme';
 import { ACHIEVEMENTS } from '../../data/achievements';
 import { useCareer } from '../../engine/CareerContext';
+import { loadCareerHistory } from '../../storage/careerStorage';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export function LegendAchievementsScreen() {
   const { player } = useCareer();
   const { t, pick } = useLanguage();
-  const unlockedIds = new Set(player?.unlockedAchievementIds ?? []);
+  // Bug fix (user feedback): this screen used to read ONLY the current
+  // in-progress career's player.unlockedAchievementIds — once a career ends
+  // and the player returns home, `player` resets to null (discardCareer) and
+  // every achievement earned in that finished career vanished from this
+  // screen, even though it was correctly archived. Achievements are now a
+  // lifetime, cross-career set: union of the active career's unlocked ids
+  // (if any) with every archived past career's ids. Re-read on every focus
+  // (not just mount) so finishing a career and coming straight back here
+  // shows it immediately.
+  const [historicalIds, setHistoricalIds] = useState<string[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadCareerHistory().then((history) => {
+        setHistoricalIds(history.flatMap((p) => p.unlockedAchievementIds ?? []));
+      });
+    }, [])
+  );
+
+  const unlockedIds = new Set([...(player?.unlockedAchievementIds ?? []), ...historicalIds]);
 
   return (
     <Screen scroll>

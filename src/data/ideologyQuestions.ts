@@ -136,6 +136,13 @@ export const IDEOLOGY_PROFILES: IdeologyResultProfile[] = [
       de: 'Du schätzt Kontrolle, Geduld und den Tod durch tausend Pässe.',
     },
     matches: (s) => s.possession >= 2 && s.individualism <= 0,
+    managerComparison: {
+      name: 'Pep Guardiola',
+      blurb: {
+        en: 'Patient possession and positional play as a first principle — Barcelona, Bayern, Man City.',
+        de: 'Geduldiger Ballbesitz und Positionsspiel als Grundprinzip — Barcelona, Bayern, Man City.',
+      },
+    },
   },
   {
     id: 'counter-attack-purist',
@@ -145,6 +152,13 @@ export const IDEOLOGY_PROFILES: IdeologyResultProfile[] = [
       de: 'Tief verteidigen, schnell umschalten, Räume im Übergang bestrafen.',
     },
     matches: (s) => s.directness >= 2 && s.pressing <= 0,
+    managerComparison: {
+      name: 'Diego Simeone',
+      blurb: {
+        en: 'A compact, disciplined low block that strikes fast on the break — Atlético Madrid’s trademark.',
+        de: 'Ein kompakter, disziplinierter tiefer Block, der schnell im Konter zuschlägt — das Markenzeichen von Atlético Madrid.',
+      },
+    },
   },
   {
     id: 'gegenpress-disciple',
@@ -154,6 +168,13 @@ export const IDEOLOGY_PROFILES: IdeologyResultProfile[] = [
       de: 'Den Ball im Moment des Verlusts zurückerobern — Chaos mit Absicht.',
     },
     matches: (s) => s.pressing >= 2,
+    managerComparison: {
+      name: 'Jürgen Klopp',
+      blurb: {
+        en: 'The manager who put "Gegenpressing" itself on the map — relentless pressing the instant the ball is lost.',
+        de: 'Der Trainer, der den Begriff „Gegenpressing“ bekannt gemacht hat — sofortiges, intensives Pressing nach Ballverlust.',
+      },
+    },
   },
   {
     id: 'individualist-romantic',
@@ -163,6 +184,13 @@ export const IDEOLOGY_PROFILES: IdeologyResultProfile[] = [
       de: 'Du willst ein Ausnahmetalent, das das Spiel alleine entscheiden kann.',
     },
     matches: (s) => s.individualism >= 2,
+    managerComparison: {
+      name: 'Carlo Ancelotti',
+      blurb: {
+        en: 'Builds the system around giving star individuals freedom, rather than imposing one rigid structure.',
+        de: 'Baut das System darum auf, Ausnahmespielern Freiheit zu geben, statt eine starre Struktur aufzuzwingen.',
+      },
+    },
   },
   {
     id: 'balanced-pragmatist',
@@ -172,6 +200,13 @@ export const IDEOLOGY_PROFILES: IdeologyResultProfile[] = [
       de: 'Kein festes Dogma — du passt den Plan an den Gegner an.',
     },
     matches: () => true, // fallback profile
+    managerComparison: {
+      name: 'Didier Deschamps',
+      blurb: {
+        en: 'Result-first and adaptable — the setup changes with the opponent and the players available, not a fixed dogma.',
+        de: 'Ergebnisorientiert und anpassungsfähig — die Ausrichtung ändert sich je nach Gegner und verfügbaren Spielern, kein festes Dogma.',
+      },
+    },
   },
 ];
 

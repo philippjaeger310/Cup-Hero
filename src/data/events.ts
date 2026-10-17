@@ -36,6 +36,18 @@ export const EVENT_NOTES: Record<string, LocalizedText> = {
   'focused-on-self': { en: 'Focused on personal performance', de: 'Auf eigene Leistung fokussiert' },
   'began-farewell-season': { en: 'Began a farewell season', de: 'Abschiedssaison begonnen' },
   'kept-competing': { en: 'Kept competing for a starting spot', de: 'Weiter um Stammplatz gekämpft' },
+  'bought-in-fully': { en: 'Bought in fully', de: 'Voll mitgezogen' },
+  'stuck-to-own-game': { en: 'Stuck to your own game', de: 'Beim eigenen Spiel geblieben' },
+  // Deferred risk/reward outcome notes (see EventChoiceEffect.riskReward) —
+  // one success/failure pair per event that uses the mechanic.
+  'captaincy-paid-off': { en: 'The armband suited you — a strong season as captain', de: 'Die Binde hat dir gutgetan — eine starke Saison als Kapitän' },
+  'captaincy-backfired': { en: 'The armband weighed heavy on a rough season', de: 'Die Binde lastete schwer in einer schwachen Saison' },
+  'mentoring-paid-off': { en: 'Mentoring the youngster paid off for your own game too', de: 'Die Förderung des Youngsters hat sich auch für dich ausgezahlt' },
+  'mentoring-flat': { en: 'Mentoring cost you minutes with little to show for it', de: 'Die Förderung hat Spielzeit gekostet, ohne viel zurückzugeben' },
+  'buy-in-paid-off': { en: 'Buying into the new system paid off', de: 'Das Mitziehen beim neuen System hat sich ausgezahlt' },
+  'buy-in-backfired': { en: 'The new system never clicked for you', de: 'Mit dem neuen System bist du nie warm geworden' },
+  'own-game-vindicated': { en: 'Sticking to your game was vindicated', de: 'Das Festhalten am eigenen Spiel hat sich bestätigt' },
+  'own-game-cost-favor': { en: 'Sticking to your game cost you the coach’s favor', de: 'Das Festhalten am eigenen Spiel hat dich die Gunst des Trainers gekostet' },
 };
 
 export const CAREER_EVENTS: CareerEvent[] = [
@@ -112,14 +124,28 @@ export const CAREER_EVENTS: CareerEvent[] = [
       {
         id: 'accept',
         label: { en: 'Buy in fully', de: 'Voll mitziehen' },
-        description: { en: 'Commit to the new system — steep learning curve.', de: 'Sich dem neuen System verschreiben — steile Lernkurve.' },
-        effect: { ovrDelta: 2, appsShare: 0.6, noteKey: 'adapted-new-tactics' },
+        description: {
+          en: 'Commit to the new system — more minutes, but a real chance it never clicks.',
+          de: 'Sich dem neuen System verschreiben — mehr Spielzeit, aber echtes Risiko, dass es nie passt.',
+        },
+        effect: {
+          appsShare: 0.65,
+          noteKey: 'bought-in-fully',
+          riskReward: { successRange: [2, 4], failureRange: [-3, -1], successNoteKey: 'buy-in-paid-off', failureNoteKey: 'buy-in-backfired' },
+        },
       },
       {
         id: 'reject',
         label: { en: 'Stick to your game', de: 'Beim eigenen Spiel bleiben' },
-        description: { en: 'Keep playing your way — coach loses patience.', de: 'Weiter auf eigene Art spielen — Trainer verliert Geduld.' },
-        effect: { appsShare: 0.35, noteKey: 'clashed-with-coach' },
+        description: {
+          en: 'Keep playing your way — fewer minutes, but you can still prove the coach wrong.',
+          de: 'Weiter auf eigene Art spielen — weniger Spielzeit, aber du kannst den Trainer trotzdem widerlegen.',
+        },
+        effect: {
+          appsShare: 0.4,
+          noteKey: 'stuck-to-own-game',
+          riskReward: { successRange: [0, 1], failureRange: [-1, 0], successNoteKey: 'own-game-vindicated', failureNoteKey: 'own-game-cost-favor' },
+        },
       },
     ],
   },
@@ -175,13 +201,19 @@ export const CAREER_EVENTS: CareerEvent[] = [
       {
         id: 'accept',
         label: { en: 'Accept the armband', de: 'Binde annehmen' },
-        description: { en: 'Take on leadership — extra scrutiny when results dip.', de: 'Führung übernehmen — extra Kritik bei schlechten Ergebnissen.' },
-        effect: { ovrDelta: 2, noteKey: 'became-captain' },
+        description: {
+          en: 'Take on leadership — rewarded if the season goes well, punished if it doesn’t.',
+          de: 'Führung übernehmen — wird bei einer guten Saison belohnt, bei einer schlechten abgestraft.',
+        },
+        effect: {
+          noteKey: 'became-captain',
+          riskReward: { successRange: [2, 4], failureRange: [-2, -1], successNoteKey: 'captaincy-paid-off', failureNoteKey: 'captaincy-backfired' },
+        },
       },
       {
         id: 'reject',
         label: { en: 'Decline', de: 'Ablehnen' },
-        description: { en: 'Stay focused on your own game.', de: 'Fokus auf das eigene Spiel behalten.' },
+        description: { en: 'Stay focused on your own game — no risk, no reward.', de: 'Fokus auf das eigene Spiel behalten — kein Risiko, keine Belohnung.' },
         effect: { ovrDelta: 0, noteKey: 'declined-captaincy' },
       },
     ],
@@ -237,8 +269,11 @@ export const CAREER_EVENTS: CareerEvent[] = [
       {
         id: 'accept',
         label: { en: 'Make the move', de: 'Wechseln' },
-        description: { en: 'New league, new culture — adaptation period expected.', de: 'Neue Liga, neue Kultur — Eingewöhnungszeit zu erwarten.' },
-        effect: { valueMultiplier: 1.3, appsShare: 0.55, ovrDelta: -1, noteKey: 'moved-abroad' },
+        description: {
+          en: 'New league, new culture — you’ll pick the actual club once you commit.',
+          de: 'Neue Liga, neue Kultur — den konkreten Verein wählst du, sobald du zusagst.',
+        },
+        effect: { valueMultiplier: 1.3, appsShare: 0.55, ovrDelta: -1, noteKey: 'moved-abroad', foreignMove: true },
       },
       {
         id: 'reject',
@@ -279,14 +314,21 @@ export const CAREER_EVENTS: CareerEvent[] = [
       {
         id: 'accept',
         label: { en: 'Take the youngster under your wing', de: 'Den Youngster unter deine Fittiche nehmen' },
-        description: { en: 'Share minutes to develop the next generation.', de: 'Spielzeit teilen, um die nächste Generation zu fördern.' },
-        effect: { appsShare: 0.5, noteKey: 'mentored-teammate' },
+        description: {
+          en: 'Share minutes to develop the next generation — usually pays off for your own game too.',
+          de: 'Spielzeit teilen, um die nächste Generation zu fördern — zahlt sich meist auch für dein eigenes Spiel aus.',
+        },
+        effect: {
+          appsShare: 0.55,
+          noteKey: 'mentored-teammate',
+          riskReward: { successRange: [2, 4], failureRange: [-1, 0], successNoteKey: 'mentoring-paid-off', failureNoteKey: 'mentoring-flat' },
+        },
       },
       {
         id: 'reject',
         label: { en: 'Play for yourself', de: 'Für dich selbst spielen' },
-        description: { en: 'Keep chasing your own minutes and milestones.', de: 'Weiter eigene Spielzeit und Meilensteine verfolgen.' },
-        effect: { appsShare: 0.75, noteKey: 'focused-on-self' },
+        description: { en: 'Keep chasing your own minutes and milestones — no risk, no reward.', de: 'Weiter eigene Spielzeit und Meilensteine verfolgen — kein Risiko, keine Belohnung.' },
+        effect: { appsShare: 0.75, ovrDelta: 0, noteKey: 'focused-on-self' },
       },
     ],
   },
@@ -300,8 +342,11 @@ export const CAREER_EVENTS: CareerEvent[] = [
       {
         id: 'accept',
         label: { en: 'Plan a farewell season', de: 'Abschiedssaison planen' },
-        description: { en: 'Reduced role, ceremonial send-off.', de: 'Reduzierte Rolle, feierlicher Abschied.' },
-        effect: { appsShare: 0.35, noteKey: 'began-farewell-season' },
+        description: {
+          en: 'Reduced role, ceremonial send-off — afterward you’ll get both a transfer choice and the option to retire early.',
+          de: 'Reduzierte Rolle, feierlicher Abschied — danach bekommst du sowohl eine Wechseloption als auch die Möglichkeit, früh in Rente zu gehen.',
+        },
+        effect: { appsShare: 0.35, noteKey: 'began-farewell-season', guaranteedRetireOption: true },
       },
       {
         id: 'reject',
